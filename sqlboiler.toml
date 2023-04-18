@@ -1,3 +1,5 @@
+pkgname             = "boiler"
+output              = "infra/boiler"
 [psql]
   dbname = "postgres"
   host   = "postgres"

@@ -7,6 +7,14 @@ services:
     - db_data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: postgrespassword
+  test-postgres:
+    image: postgres:12
+    restart: always
+    volumes:
+    - db_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgrespassword
+  
   graphql:
     image: hasura/graphql-engine:v2.22.0
     ports:
@@ -49,7 +57,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
-    
+      TEST_DB: testpostgres
 volumes:
   db_data:
        

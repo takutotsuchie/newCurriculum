@@ -7,7 +7,8 @@ import (
 	"log"
 	"net/http"
 	DB "newCurriculum/db"
-	"newCurriculum/graph"
+	"newCurriculum/gql"
+	"newCurriculum/gql/resolver"
 	"os"
 
 	"github.com/99designs/gqlgen/graphql"
@@ -36,7 +37,7 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	srv := handler.NewDefaultServer(gql.NewExecutableSchema(gql.Config{Resolvers: &resolver.Resolver{}}))
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		log.Print(err)

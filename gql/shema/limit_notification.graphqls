@@ -1,0 +1,3 @@
+type Subscription {
+  onLimit(input: ID!): ID!
+}

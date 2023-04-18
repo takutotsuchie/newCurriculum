@@ -1,0 +1,3 @@
+extend type Mutation{
+    updateTask(input: NewTask!):ID! 
+}
