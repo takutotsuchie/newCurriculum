@@ -6,11 +6,11 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"newCurriculum/db"
 	"newCurriculum/gql/model"
 )
 
 // UpdateTask is the resolver for the updateTask field.
 func (r *mutationResolver) UpdateTask(ctx context.Context, input model.NewTask) (string, error) {
-	panic(fmt.Errorf("not implemented: UpdateTask - updateTask"))
+	return db.UpdateTask(ctx, input)
 }

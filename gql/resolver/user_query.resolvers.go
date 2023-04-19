@@ -6,14 +6,16 @@ package resolver
 
 import (
 	"context"
-	"fmt"
 	"newCurriculum/gql"
 	"newCurriculum/gql/model"
 )
 
 // User is the resolver for the user field.
 func (r *queryResolver) User(ctx context.Context, id string) (*model.User, error) {
-	panic(fmt.Errorf("このクエリは無効です"))
+	return &model.User{
+		ID:   "1",
+		Name: "taku",
+	}, nil
 }
 
 // Query returns gql.QueryResolver implementation.

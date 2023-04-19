@@ -6,10 +6,10 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"newCurriculum/db"
 )
 
 // DeleteTask is the resolver for the deleteTask field.
 func (r *mutationResolver) DeleteTask(ctx context.Context, input string) (string, error) {
-	panic(fmt.Errorf("not implemented: DeleteTask - deleteTask"))
+	return db.DeleteTask(ctx, input)
 }

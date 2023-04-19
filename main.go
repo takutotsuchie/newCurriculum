@@ -21,7 +21,8 @@ import (
 const defaultPort = "8000"
 
 func main() {
-	fmt.Println("Hello WOrld")
+	fmt.Println("Hello World")
+	// DBに接続
 	POSTGRES_USER := os.Getenv("POSTGRES_USER")
 	POSTGRES_PASSWORD := os.Getenv("POSTGRES_PASSWORD")
 	POSTGRES_DB := os.Getenv("POSTGRES_DB")
@@ -31,13 +32,14 @@ func main() {
 		log.Fatal(err)
 	}
 	DB.SetDB(db)
-
+	// ポートでlisten
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
 	}
 
 	srv := handler.NewDefaultServer(gql.NewExecutableSchema(gql.Config{Resolvers: &resolver.Resolver{}}))
+	// errorをここで、一括で出力
 	srv.SetErrorPresenter(func(ctx context.Context, e error) *gqlerror.Error {
 		err := graphql.DefaultErrorPresenter(ctx, e)
 		log.Print(err)

@@ -6,15 +6,7 @@ services:
     volumes:
     - db_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_PASSWORD: postgrespassword
-  test-postgres:
-    image: postgres:12
-    restart: always
-    volumes:
-    - db_data:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: postgrespassword
-  
+      POSTGRES_PASSWORD: postgrespassword 
   graphql:
     image: hasura/graphql-engine:v2.22.0
     ports:
@@ -40,7 +32,6 @@ services:
       # HASURA_GRAPHQL_CONSOLE_ASSETS_DIR: /srv/console-assets
       ## uncomment next line to set an admin secret
       # HASURA_GRAPHQL_ADMIN_SECRET: myadminsecretkey
-    
     volumes:
       - ./hasura:/hasura
   go:
@@ -57,7 +48,7 @@ services:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgrespassword
-      TEST_DB: testpostgres
+      TEST_DB: testDB
 volumes:
   db_data:
        

@@ -11,11 +11,15 @@ import (
 
 // 4つのリゾルバはここにつながる。
 func CreateTask(ctx context.Context, input model.NewTask) (string, error) {
+	err := checkInput(input)
+	if err != nil {
+		return "", err
+	}
 	db := GetDB()
 	var taskTable table.TaskTable
 	var labelTable table.LabelTable
 	var taskLabelTable table.TaskLabelTable
-	err := taskTable.Insert(ctx, db, convertInput(input))
+	err = taskTable.Insert(ctx, db, convertInput(input))
 	if err != nil {
 		return "", err
 	}
@@ -30,11 +34,15 @@ func CreateTask(ctx context.Context, input model.NewTask) (string, error) {
 	return input.ID, nil
 }
 func UpdateTask(ctx context.Context, input model.NewTask) (string, error) {
+	err := checkInput(input)
+	if err != nil {
+		return "", err
+	}
 	db := GetDB()
 	var taskTable table.TaskTable
 	var labelTable table.LabelTable
 	var taskLabelTable table.TaskLabelTable
-	err := taskTable.Update(ctx, db, convertInput(input))
+	err = taskTable.Update(ctx, db, convertInput(input))
 	if err != nil {
 		return "", err
 	}
@@ -75,7 +83,6 @@ func OnLimit(ctx context.Context, userID string) (<-chan string, error) {
 			}
 		})
 		c.Start()
-
 		// cronジョブを継続的に実行するために無限ループを使用する
 		for {
 			time.Sleep(time.Minute)

@@ -6,14 +6,14 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"newCurriculum/db"
 	"newCurriculum/gql"
 	"newCurriculum/gql/model"
 )
 
 // CreateTask is the resolver for the createTask field.
 func (r *mutationResolver) CreateTask(ctx context.Context, input model.NewTask) (string, error) {
-	panic(fmt.Errorf("not implemented: CreateTask - createTask"))
+	return db.CreateTask(ctx, input)
 }
 
 // Mutation returns gql.MutationResolver implementation.

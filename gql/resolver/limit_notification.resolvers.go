@@ -6,13 +6,13 @@ package resolver
 
 import (
 	"context"
-	"fmt"
+	"newCurriculum/db"
 	"newCurriculum/gql"
 )
 
 // OnLimit is the resolver for the onLimit field.
 func (r *subscriptionResolver) OnLimit(ctx context.Context, input string) (<-chan string, error) {
-	panic(fmt.Errorf("not implemented: OnLimit - onLimit"))
+	return db.OnLimit(ctx, input)
 }
 
 // Subscription returns gql.SubscriptionResolver implementation.
