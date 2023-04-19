@@ -58,7 +58,7 @@ type ComplexityRoot struct {
 	}
 
 	Subscription struct {
-		OnLimit func(childComplexity int, input string) int
+		OnLimit func(childComplexity int, input model.Limit) int
 	}
 
 	User struct {
@@ -76,7 +76,7 @@ type QueryResolver interface {
 	User(ctx context.Context, id string) (*model.User, error)
 }
 type SubscriptionResolver interface {
-	OnLimit(ctx context.Context, input string) (<-chan string, error)
+	OnLimit(ctx context.Context, input model.Limit) (<-chan string, error)
 }
 
 type executableSchema struct {
@@ -152,7 +152,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Subscription.OnLimit(childComplexity, args["input"].(string)), true
+		return e.complexity.Subscription.OnLimit(childComplexity, args["input"].(model.Limit)), true
 
 	case "User.id":
 		if e.complexity.User.ID == nil {
@@ -176,6 +176,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e}
 	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputLimit,
 		ec.unmarshalInputNewTask,
 	)
 	first := true
@@ -355,10 +356,10 @@ func (ec *executionContext) field_Query_user_args(ctx context.Context, rawArgs m
 func (ec *executionContext) field_Subscription_onLimit_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
+	var arg0 model.Limit
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNID2string(ctx, tmp)
+		arg0, err = ec.unmarshalNLimit2newCurriculumᚋgqlᚋmodelᚐLimit(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -774,7 +775,7 @@ func (ec *executionContext) _Subscription_onLimit(ctx context.Context, field gra
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Subscription().OnLimit(rctx, fc.Args["input"].(string))
+		return ec.resolvers.Subscription().OnLimit(rctx, fc.Args["input"].(model.Limit))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2690,6 +2691,42 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputLimit(ctx context.Context, obj interface{}) (model.Limit, error) {
+	var it model.Limit
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"userID", "when"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "userID":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userID"))
+			it.UserID, err = ec.unmarshalNID2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "when":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("when"))
+			it.When, err = ec.unmarshalNwhenType2newCurriculumᚋgqlᚋmodelᚐWhenType(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewTask(ctx context.Context, obj interface{}) (model.NewTask, error) {
 	var it model.NewTask
 	asMap := map[string]interface{}{}
@@ -3322,6 +3359,11 @@ func (ec *executionContext) marshalNInt2int(ctx context.Context, sel ast.Selecti
 	return res
 }
 
+func (ec *executionContext) unmarshalNLimit2newCurriculumᚋgqlᚋmodelᚐLimit(ctx context.Context, v interface{}) (model.Limit, error) {
+	res, err := ec.unmarshalInputLimit(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalNNewTask2newCurriculumᚋgqlᚋmodelᚐNewTask(ctx context.Context, v interface{}) (model.NewTask, error) {
 	res, err := ec.unmarshalInputNewTask(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3617,6 +3659,16 @@ func (ec *executionContext) marshalN__TypeKind2string(ctx context.Context, sel a
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) unmarshalNwhenType2newCurriculumᚋgqlᚋmodelᚐWhenType(ctx context.Context, v interface{}) (model.WhenType, error) {
+	var res model.WhenType
+	err := res.UnmarshalGQL(v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNwhenType2newCurriculumᚋgqlᚋmodelᚐWhenType(ctx context.Context, sel ast.SelectionSet, v model.WhenType) graphql.Marshaler {
+	return v
 }
 
 func (ec *executionContext) unmarshalOBoolean2bool(ctx context.Context, v interface{}) (bool, error) {

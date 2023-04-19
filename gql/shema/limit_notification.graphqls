@@ -1,3 +1,11 @@
+enum whenType{
+  default
+  now
+}
+input Limit{
+  userID: ID!
+  when: whenType!
+}
 type Subscription {
-  onLimit(input: ID!): ID!
+  onLimit(input: Limit!): ID!
 }

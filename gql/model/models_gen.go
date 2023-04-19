@@ -8,6 +8,11 @@ import (
 	"strconv"
 )
 
+type Limit struct {
+	UserID string   `json:"userID"`
+	When   WhenType `json:"when"`
+}
+
 type NewTask struct {
 	ID          string     `json:"id"`
 	Title       string     `json:"title"`
@@ -64,5 +69,46 @@ func (e *TaskStatus) UnmarshalGQL(v interface{}) error {
 }
 
 func (e TaskStatus) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
+}
+
+type WhenType string
+
+const (
+	WhenTypeDefault WhenType = "default"
+	WhenTypeNow     WhenType = "now"
+)
+
+var AllWhenType = []WhenType{
+	WhenTypeDefault,
+	WhenTypeNow,
+}
+
+func (e WhenType) IsValid() bool {
+	switch e {
+	case WhenTypeDefault, WhenTypeNow:
+		return true
+	}
+	return false
+}
+
+func (e WhenType) String() string {
+	return string(e)
+}
+
+func (e *WhenType) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = WhenType(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid whenType", str)
+	}
+	return nil
+}
+
+func (e WhenType) MarshalGQL(w io.Writer) {
 	fmt.Fprint(w, strconv.Quote(e.String()))
 }

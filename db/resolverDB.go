@@ -2,11 +2,10 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"newCurriculum/db/table"
 	"newCurriculum/gql/model"
 	"time"
-
-	"github.com/robfig/cron"
 )
 
 // 4つのリゾルバはここにつながる。
@@ -72,21 +71,31 @@ func DeleteTask(ctx context.Context, input string) (string, error) {
 }
 
 // 期限が来たら、通知する。
-func OnLimit(ctx context.Context, userID string) (<-chan string, error) {
+func OnLimit(ctx context.Context, input model.Limit) (<-chan string, error) {
 	ch := make(chan string, 50)
-	go func() {
-		c := cron.New()
-		c.AddFunc("0 7 * * *", func() {
-			taskIDs := searchDB(ctx, userID)
+	if input.When == model.WhenTypeDefault {
+		go func() {
+			// 7時までの時間を計算
+			t := time.Now()
+			target := time.Date(t.Year(), t.Month(), t.Day()+1, 7, 0, 0, 0, time.Local)
+			duration := target.Sub(t)
+			// 7時まで、待機
+			fmt.Printf("Waiting for %v\n", duration)
+			time.Sleep(duration)
+			taskIDs := searchDB(ctx, input.UserID)
 			for _, taskID := range taskIDs {
 				ch <- taskID
 			}
-		})
-		c.Start()
-		// cronジョブを継続的に実行するために無限ループを使用する
-		for {
-			time.Sleep(time.Minute)
-		}
-	}()
+		}()
+	} else {
+		// テスト用のコード
+		go func() {
+			taskIDs := searchDB(ctx, input.UserID)
+			for _, taskID := range taskIDs {
+				ch <- taskID
+			}
+		}()
+	}
+
 	return ch, nil
 }

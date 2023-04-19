@@ -8,7 +8,6 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/kat-co/vala v0.0.0-20170210184112-42e1d8b61f12
 	github.com/lib/pq v1.10.8
-	github.com/robfig/cron v1.2.0
 	github.com/spf13/viper v1.12.0
 	github.com/vektah/gqlparser/v2 v2.5.1
 	github.com/volatiletech/null/v8 v8.1.2

@@ -8,10 +8,11 @@ import (
 	"context"
 	"newCurriculum/db"
 	"newCurriculum/gql"
+	"newCurriculum/gql/model"
 )
 
 // OnLimit is the resolver for the onLimit field.
-func (r *subscriptionResolver) OnLimit(ctx context.Context, input string) (<-chan string, error) {
+func (r *subscriptionResolver) OnLimit(ctx context.Context, input model.Limit) (<-chan string, error) {
 	return db.OnLimit(ctx, input)
 }
 
