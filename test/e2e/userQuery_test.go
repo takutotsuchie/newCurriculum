@@ -3,14 +3,19 @@ package e2e
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"testing"
 )
 
+type GraphQLRequestBody struct {
+	Query string `json:"query"`
+}
+
 func TestUserQuery(t *testing.T) {
 	// まずクエリをかく。
+	// これはまだjson形式でないので、パースできない
+	// graphQLのクエリと、jsonは異なる。
 	query := `
         {
             user(id: "123") {
@@ -20,15 +25,13 @@ func TestUserQuery(t *testing.T) {
         }
     `
 	// GraphQLリクエストを定義する
-	reqBody := map[string]string{
-		"query": query,
-	}
+	// "query"がkeyで、queryがvalueの一対のjson、雑なjson
+	b := GraphQLRequestBody{Query: query}
 	// json形式にする。
-	reqBytes, err := json.Marshal(reqBody)
+	reqBytes, err := json.Marshal(b)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(string(reqBytes))
 
 	// GraphQLサーバーにPOSTリクエストを送信する
 	resp, err := http.Post("http://localhost:8000/query", "application/json", bytes.NewBuffer(reqBytes))
@@ -36,6 +39,7 @@ func TestUserQuery(t *testing.T) {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
+	// 入れ子の構造体を作る。
 	type Response struct {
 		Data struct {
 			User struct {
@@ -51,5 +55,4 @@ func TestUserQuery(t *testing.T) {
 		log.Fatal(err)
 	}
 	log.Printf("%+v\n", respBody)
-	fmt.Println("俺の名前は", respBody.Data.User.Name)
 }
