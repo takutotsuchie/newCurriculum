@@ -3,7 +3,6 @@ package e2e
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 	"testing"
 )
@@ -36,21 +35,21 @@ func TestUpdateTask(t *testing.T) {
 	reqBody := MutationRequest{Mutation: updateMutation}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
-		log.Print("json.Marshal error", err)
+		t.Error("json.Marshal error", err)
 	}
 
 	resp, err := http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		log.Print("Post request error", err)
+		t.Error("Post request error", err)
 	}
 	defer resp.Body.Close()
 	var responseStruct UpdateTaskResponse
 	err = json.NewDecoder(resp.Body).Decode(&responseStruct)
 	if err != nil {
-		log.Print(err)
+		t.Error(err)
 	}
 	if responseStruct.Data.CreateTask != "d25124d2-d2b6-9c84-7f9c-56c0a9b71694" {
-		t.Errorf("invalid ID")
+		t.Error("invalid ID")
 	}
 	// 変更を元に戻す
 	// ここからupdate2個目
@@ -58,21 +57,21 @@ func TestUpdateTask(t *testing.T) {
 	reqBody = MutationRequest{Mutation: restoreMutation}
 	reqBytes, err = json.Marshal(reqBody)
 	if err != nil {
-		log.Print("json.Marshal error", err)
+		t.Error("json.Marshal error", err)
 	}
 
 	resp, err = http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		log.Print("Post request error", err)
+		t.Error("Post request error", err)
 	}
 	err = json.NewDecoder(resp.Body).Decode(&responseStruct)
 	if err != nil {
-		log.Print(err)
+		t.Error(err)
 	}
 	if responseStruct.Data.CreateTask != "d25124d2-d2b6-9c84-7f9c-56c0a9b71694" {
-		t.Errorf("invalid ID")
+		t.Error("invalid ID")
 	}
-	log.Println("UpdateTask is OK!")
+	t.Log("UpdateTask is OK!")
 	defer resp.Body.Close()
 
 }

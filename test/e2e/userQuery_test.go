@@ -3,7 +3,6 @@ package e2e
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 	"testing"
 )
@@ -30,13 +29,13 @@ func TestUserQuery(t *testing.T) {
 	// json形式にする。
 	reqBytes, err := json.Marshal(b)
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 
 	// GraphQLサーバーにPOSTリクエストを送信する
 	resp, err := http.Post("http://localhost:8000/query", "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 	defer resp.Body.Close()
 	// 入れ子の構造体を作る。
@@ -52,7 +51,7 @@ func TestUserQuery(t *testing.T) {
 	var respBody Response
 	err = json.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
-	log.Printf("%+v\n", respBody)
+	t.Log("%+v\n", respBody)
 }

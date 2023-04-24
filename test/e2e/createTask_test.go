@@ -3,7 +3,6 @@ package e2e
 import (
 	"bytes"
 	"encoding/json"
-	"log"
 	"net/http"
 	"testing"
 )
@@ -33,12 +32,12 @@ func TestCreateTaskAndDeleteTask(t *testing.T) {
 	reqBody := MutationRequest{Mutation: createMutation}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
-		log.Print("json.Marshal error", err)
+		t.Error("json.Marshal error", err)
 	}
 
 	resp, err := http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		log.Print("Post request error", err)
+		t.Error("Post request error", err)
 	}
 	defer resp.Body.Close()
 	// レスポンスを読み込んで処理する
@@ -46,32 +45,32 @@ func TestCreateTaskAndDeleteTask(t *testing.T) {
 
 	err = json.NewDecoder(resp.Body).Decode(&responseStruct)
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 	if responseStruct.Data.CreateTask != "9995f552-6549-05d3-c60e-2fce4d84e2ff" {
-		t.Errorf("invalid ID")
+		t.Error("invalid ID")
 	}
-	log.Println("CreateTask is OK!")
+	t.Log("CreateTask is OK!")
 	// ここからdelete
 
 	reqBody = MutationRequest{Mutation: deleteMutation}
 	reqBytes, err = json.Marshal(reqBody)
 	if err != nil {
-		log.Print("json.Marshal error", err)
+		t.Error("json.Marshal error", err)
 	}
 	resp, err = http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		log.Print("post error", err)
+		t.Error("post error", err)
 	}
 
 	var DeleteResponseStruct DeleteTaskResponse
 
 	err = json.NewDecoder(resp.Body).Decode(&DeleteResponseStruct)
 	if err != nil {
-		log.Fatal(err)
+		t.Error(err)
 	}
 	if DeleteResponseStruct.Data.DeleteTask != "9995f552-6549-05d3-c60e-2fce4d84e2ff" {
 		t.Errorf("invalid ID")
 	}
-	log.Println("DeleteTask is OK!")
+	t.Log("DeleteTask is OK!")
 }

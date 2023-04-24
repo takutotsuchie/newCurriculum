@@ -3,8 +3,6 @@ package e2e
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
-	"log"
 	"net/http"
 	"testing"
 )
@@ -28,17 +26,16 @@ func TestSubscription(t *testing.T) {
 	reqBody := MutationRequest{Mutation: subscriptionMessage}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
-		log.Print(err)
+		t.Error(err)
 	}
 	res, err := http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		log.Print(err)
+		t.Error(err)
 	}
 	var resStruct SubscriptionStruct
 	err = json.NewDecoder(res.Body).Decode(&resStruct)
 	if err != nil {
-		log.Print(err)
+		t.Error(err)
 	}
-	fmt.Println(resStruct.Data.OnLimit)
-	log.Print("subscription is OK!")
+	t.Log("subscription is OK!")
 }
