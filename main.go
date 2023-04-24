@@ -22,10 +22,14 @@ const defaultPort = "8000"
 
 func main() {
 	fmt.Println("Hello World")
+
 	// DBに接続
 	POSTGRES_USER := os.Getenv("POSTGRES_USER")
 	POSTGRES_PASSWORD := os.Getenv("POSTGRES_PASSWORD")
 	POSTGRES_DB := os.Getenv("POSTGRES_DB")
+	if os.Getenv("USE_TEST_DB") == "true" {
+		POSTGRES_DB = os.Getenv("POSTGRES_DB")
+	}
 	connStr := "host=postgres port=5432 user=" + POSTGRES_USER + " password=" + POSTGRES_PASSWORD + " dbname=" + POSTGRES_DB + " sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
