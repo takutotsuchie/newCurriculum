@@ -53,5 +53,5 @@ func TestUserQuery(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	t.Log("%+v\n", respBody)
+	t.Logf("%+v\n", respBody)
 }
