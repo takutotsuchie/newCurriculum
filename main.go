@@ -29,6 +29,7 @@ func main() {
 	POSTGRES_DB := os.Getenv("POSTGRES_DB")
 	if os.Getenv("USE_TEST_DB") == "true" {
 		POSTGRES_DB = os.Getenv("POSTGRES_DB")
+		fmt.Println("[notice] this is a test")
 	}
 	connStr := "host=postgres port=5432 user=" + POSTGRES_USER + " password=" + POSTGRES_PASSWORD + " dbname=" + POSTGRES_DB + " sslmode=disable"
 	db, err := sql.Open("postgres", connStr)
