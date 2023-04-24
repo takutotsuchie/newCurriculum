@@ -32,12 +32,12 @@ func TestCreateTaskAndDeleteTask(t *testing.T) {
 	reqBody := MutationRequest{Mutation: createMutation}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
-		t.Error("json.Marshal error", err)
+		t.Fatal("json.Marshal error", err)
 	}
 
 	resp, err := http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		t.Error("Post request error", err)
+		t.Fatal("Post request error", err)
 	}
 	defer resp.Body.Close()
 	// レスポンスを読み込んで処理する
@@ -45,10 +45,10 @@ func TestCreateTaskAndDeleteTask(t *testing.T) {
 
 	err = json.NewDecoder(resp.Body).Decode(&responseStruct)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if responseStruct.Data.CreateTask != "9995f552-6549-05d3-c60e-2fce4d84e2ff" {
-		t.Error("invalid ID")
+		t.Fatal("invalid ID")
 	}
 	t.Log("CreateTask is OK!")
 	// ここからdelete
@@ -56,21 +56,21 @@ func TestCreateTaskAndDeleteTask(t *testing.T) {
 	reqBody = MutationRequest{Mutation: deleteMutation}
 	reqBytes, err = json.Marshal(reqBody)
 	if err != nil {
-		t.Error("json.Marshal error", err)
+		t.Fatal("json.Marshal error", err)
 	}
 	resp, err = http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		t.Error("post error", err)
+		t.Fatal("post error", err)
 	}
 
 	var DeleteResponseStruct DeleteTaskResponse
 
 	err = json.NewDecoder(resp.Body).Decode(&DeleteResponseStruct)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	if DeleteResponseStruct.Data.DeleteTask != "9995f552-6549-05d3-c60e-2fce4d84e2ff" {
-		t.Errorf("invalid ID")
+		t.Fatal("invalid ID")
 	}
 	t.Log("DeleteTask is OK!")
 }

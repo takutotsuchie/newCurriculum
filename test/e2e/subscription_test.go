@@ -26,16 +26,16 @@ func TestSubscription(t *testing.T) {
 	reqBody := MutationRequest{Mutation: subscriptionMessage}
 	reqBytes, err := json.Marshal(reqBody)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	res, err := http.Post(url, contentType, bytes.NewBuffer(reqBytes))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	var resStruct SubscriptionStruct
 	err = json.NewDecoder(res.Body).Decode(&resStruct)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Log("subscription is OK!")
 }

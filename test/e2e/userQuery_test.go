@@ -29,13 +29,13 @@ func TestUserQuery(t *testing.T) {
 	// json形式にする。
 	reqBytes, err := json.Marshal(b)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	// GraphQLサーバーにPOSTリクエストを送信する
 	resp, err := http.Post("http://localhost:8000/query", "application/json", bytes.NewBuffer(reqBytes))
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	defer resp.Body.Close()
 	// 入れ子の構造体を作る。
@@ -51,7 +51,7 @@ func TestUserQuery(t *testing.T) {
 	var respBody Response
 	err = json.NewDecoder(resp.Body).Decode(&respBody)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 	t.Logf("%+v\n", respBody)
 }
