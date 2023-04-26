@@ -3,8 +3,8 @@ package db
 import (
 	"errors"
 	"fmt"
-	"newCurriculum/graph/model"
-	"newCurriculum/models"
+	"newCurriculum/gql/model"
+	"newCurriculum/infra/boiler"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,33 +16,8 @@ func ParseTime(input string) time.Time {
 	return time
 }
 
-func shapeInput(input model.NewTask) *model.Task {
-	return &model.Task{
-		ID:          input.ID,
-		Title:       input.Title,
-		Explanation: input.Explanation,
-		Limit:       input.Limit,
-		Priority:    input.Priority,
-		Status:      input.Status,
-		UserID:      input.UserID,
-		LabelValue:  input.LabelValue,
-	}
-}
-
-func convertToTask(newTask model.NewTask) models.Task {
-	task := models.Task{
-		ID:          newTask.ID,
-		Title:       newTask.Title,
-		Explanation: null.NewString(newTask.Explanation, newTask.Explanation != ""),
-		Limit:       ParseTime(newTask.Limit),
-		Priority:    newTask.Priority,
-		Status:      string(newTask.Status),
-		UserID:      newTask.UserID,
-	}
-	return task
-}
-func createTaskLabelRealation(task_id string, label_id string) models.TaskLabelRelation {
-	return models.TaskLabelRelation{
+func createTaskLabelRealation(task_id string, label_id string) boiler.TaskLabelRelation {
+	return boiler.TaskLabelRelation{
 		ID:      generateID(),
 		TaskID:  task_id,
 		LabelID: label_id,
@@ -69,4 +44,16 @@ func checkInput(input model.NewTask) error {
 		return fmt.Errorf("終了期限が現在日時以前です%s", input.Limit)
 	}
 	return nil
+}
+
+func convertInput(input model.NewTask) boiler.Task {
+	return boiler.Task{
+		ID:          input.ID,
+		Title:       input.Title,
+		Explanation: null.NewString(input.Explanation, true),
+		Limit:       ParseTime(input.Limit),
+		Priority:    input.Priority,
+		Status:      input.Status.String(),
+		UserID:      input.UserID,
+	}
 }

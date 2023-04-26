@@ -1,0 +1,10 @@
+
+# タスクの登録、更新、削除
+type User{
+  id :String!
+  name: String!
+}
+type Query {
+  user(id: ID!): User!
+}
+

@@ -2,13 +2,9 @@ package db
 
 import (
 	"fmt"
-	"newCurriculum/graph/model"
-	"newCurriculum/models"
+	"newCurriculum/gql/model"
 	"testing"
 	"time"
-
-	"github.com/google/uuid"
-	"github.com/volatiletech/null/v8"
 )
 
 func TestParseTime(t *testing.T) {
@@ -34,65 +30,11 @@ func TestParseTime(t *testing.T) {
 	}
 }
 
-func Test_shapeInput(t *testing.T) {
-	input := model.NewTask{
-		ID:          "dda5c15d-9460-e8a0-92aa-5876a629d47c",
-		Title:       "programming",
-		Explanation: "heyhey",
-		Limit:       "2006-01-02T15:04:05Z07:00",
-		Priority:    3,
-		Status:      model.TaskStatusCompleted,
-		UserID:      "e8984c19-33fe-d0ad-5867-a39ae861ec9b",
-		LabelValue:  2,
-	}
-
-	want := model.Task{
-		ID:          "dda5c15d-9460-e8a0-92aa-5876a629d47c",
-		Title:       "programming",
-		Explanation: "heyhey",
-		Limit:       "2006-01-02T15:04:05Z07:00",
-		Priority:    3,
-		Status:      model.TaskStatusCompleted,
-		UserID:      "e8984c19-33fe-d0ad-5867-a39ae861ec9b",
-		LabelValue:  2,
-	}
-	if *shapeInput(input) != want {
-		t.Errorf("shapeInput() = %v, want %v", shapeInput(input), want)
-	}
-
-}
-
 func Test_generateID(t *testing.T) {
 	id := generateID()
 	if id == "" {
 		t.Error("should not empty")
 	}
-}
-
-func Test_convertToTask(t *testing.T) {
-	newTask := model.NewTask{
-		ID:          uuid.New().String(),
-		Title:       "Test task",
-		Explanation: "This is a test task",
-		Limit:       time.Now().Format(time.RFC3339),
-		Priority:    1,
-		Status:      model.TaskStatusCompleted,
-		UserID:      uuid.New().String(),
-	}
-	expectedTask := models.Task{
-		ID:          newTask.ID,
-		Title:       newTask.Title,
-		Explanation: null.NewString(newTask.Explanation, true),
-		Limit:       ParseTime(newTask.Limit),
-		Priority:    newTask.Priority,
-		Status:      string(newTask.Status),
-		UserID:      newTask.UserID,
-	}
-	output := convertToTask(newTask)
-	if output != expectedTask {
-		t.Errorf("invalid conversion")
-	}
-
 }
 
 func Test_createTaskLabelRealation(t *testing.T) {

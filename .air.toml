@@ -1,7 +1,11 @@
+# ルートのディレクトリ
 root = "."
+# テストデータのディレクトリ
 testdata_dir = "testdata"
+# 実行ファイルのディレクトリ
 tmp_dir = "tmp"
 
+# ビルドする方法
 [build]
   args_bin = []
   bin = "./tmp/main"

@@ -2,73 +2,100 @@ package db
 
 import (
 	"context"
-	"newCurriculum/graph/model"
+	"fmt"
+	"newCurriculum/db/table"
+	"newCurriculum/gql/model"
+	"time"
 )
 
-// 3つのリゾルバはここにつながる。
-func CreateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
-	db := GetDB()
-	var taskT taskTable
-	var labelT labelTable
-	var taskLabelT taskLabelTable
-	err := taskT.insert(ctx, db, convertToTask(input))
-	if err != nil {
-		return nil, err
-	}
-	labelID, err := labelT.selectID(ctx, db, input.LabelValue)
-	if err != nil {
-		return nil, err
-	}
-	err = taskLabelT.insert(ctx, db, createTaskLabelRealation(input.ID, labelID))
-	if err != nil {
-		return nil, err
-	}
-	return shapeInput(input), nil
-}
-
-func UpdateTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
+// 4つのリゾルバはここにつながる。
+func CreateTask(ctx context.Context, input model.NewTask) (string, error) {
 	err := checkInput(input)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	db := GetDB()
-	var taskT taskTable
-	var labelT labelTable
-	var taskLabelT taskLabelTable
-	err = taskT.update(ctx, db, convertToTask(input))
+	var taskTable table.TaskTable
+	var labelTable table.LabelTable
+	var taskLabelTable table.TaskLabelTable
+	err = taskTable.Insert(ctx, db, convertInput(input))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	labelID, err := labelT.selectID(ctx, db, input.LabelValue)
+	labelID, err := labelTable.SelectID(ctx, db, input.LabelValue)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	err = taskLabelT.update(ctx, db, createTaskLabelRealation(input.ID, labelID))
+	err = taskLabelTable.Insert(ctx, db, createTaskLabelRealation(input.ID, labelID))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	return shapeInput(input), nil
+	return input.ID, nil
 }
-
-func DeleteTask(ctx context.Context, input model.NewTask) (*model.Task, error) {
+func UpdateTask(ctx context.Context, input model.NewTask) (string, error) {
 	err := checkInput(input)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	db := GetDB()
-	var taskT taskTable
-	var taskLabelT taskLabelTable
+	var taskTable table.TaskTable
+	var labelTable table.LabelTable
+	var taskLabelTable table.TaskLabelTable
+	err = taskTable.Update(ctx, db, convertInput(input))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	err = taskLabelT.delete(ctx, db, input.ID)
+	labelID, err := labelTable.SelectID(ctx, db, input.LabelValue)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-	err = taskT.delete(ctx, db, input.ID)
+	err = taskLabelTable.Update(ctx, db, createTaskLabelRealation(input.ID, labelID))
 	if err != nil {
-		return nil, err
+		return "", err
+	}
+	return input.ID, nil
+}
+func DeleteTask(ctx context.Context, input string) (string, error) {
+	db := GetDB()
+	var taskTable table.TaskTable
+	var taskLabelTable table.TaskLabelTable
+	err := taskLabelTable.Delete(ctx, db, input)
+	if err != nil {
+		return "", err
+	}
+	err = taskTable.Delete(ctx, db, input)
+	if err != nil {
+		return "", err
+	}
+	return input, nil
+}
+
+// 期限が来たら、通知する。
+func OnLimit(ctx context.Context, input model.Limit) (<-chan string, error) {
+	ch := make(chan string, 50)
+	if input.When == model.WhenTypeDefault {
+		go func() {
+			// 7時までの時間を計算
+			t := time.Now()
+			target := time.Date(t.Year(), t.Month(), t.Day()+1, 7, 0, 0, 0, time.Local)
+			duration := target.Sub(t)
+			// 7時まで、待機
+			fmt.Printf("Waiting for %v\n", duration)
+			time.Sleep(duration)
+			taskIDs := searchDB(ctx, input.UserID)
+			for _, taskID := range taskIDs {
+				ch <- taskID
+			}
+		}()
+	} else {
+		// テスト用のコード
+		go func() {
+			taskIDs := searchDB(ctx, input.UserID)
+			for _, taskID := range taskIDs {
+				ch <- taskID
+			}
+		}()
 	}
 
-	return shapeInput(input), nil
+	return ch, nil
 }

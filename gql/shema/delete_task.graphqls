@@ -1,0 +1,3 @@
+extend type Mutation{
+    deleteTask(input: ID!): ID!
+}
