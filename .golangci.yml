@@ -1,0 +1,27 @@
+# https://golangci-lint.run/usage/configuration/#config-file
+run:
+  go: '1.18'
+  timeout: 3m
+
+issues:
+  exclude-use-default: false
+linters:
+  # すべての linter を無効化して、使うものだけ enable で指定する(ホワイトリスト制)
+  # https://golangci-lint.run/usage/linters/
+  disable-all: true
+  enable:
+    - deadcode
+    - errcheck
+    - gosimple
+    - govet
+    - ineffassign
+    - staticcheck
+    - typecheck
+    - unused
+    - varcheck
+    - gocyclo
+    - gofmt
+    - gosec
+    - dupl
+    # NOTE: Genericsに対応したら再度有効化する
+    # - structcheck
